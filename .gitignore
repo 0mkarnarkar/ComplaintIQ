@@ -22,6 +22,9 @@ htmlcov/
 env/
 venv/
 
+# Trained machine learning model artifacts (auto-generated on startup/tests)
+*.pkl
+
 # Operating System Files
 .DS_Store
 Thumbs.db

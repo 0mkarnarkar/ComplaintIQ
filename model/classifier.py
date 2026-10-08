@@ -91,10 +91,14 @@ def train_models(force=False):
 
 
 def _load_model(path):
-    """Load a pickled model pipeline."""
+    """Load a pickled model pipeline, auto-training if missing or corrupted."""
     if not os.path.exists(path):
         train_models(force=True)
-    return joblib.load(path)
+    try:
+        return joblib.load(path)
+    except Exception:
+        train_models(force=True)
+        return joblib.load(path)
 
 
 def predict(complaint_text: str) -> dict:
