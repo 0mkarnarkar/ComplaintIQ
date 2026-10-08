@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ComplaintIQ — AI-powered bank complaint classifier that categorizes customer complaints, assesses urgency, and routes to the right team.">
+    <title>ComplaintIQ — AI Complaint Classifier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGrad)"/>
+                        <path d="M10 16.5L14 20.5L22 12.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+                                <stop stop-color="#6366f1"/>
+                                <stop offset="1" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <h1>ComplaintIQ</h1>
+                    <p class="tagline">AI-Powered Complaint Intelligence</p>
+                </div>
+            </div>
+            <div class="status-badge" id="statusBadge">
+                <span class="status-dot"></span>
+                <span>System Online</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section glass-card">
+                <div class="section-header">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M4 4H16V14L12 12H4V4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M8 18H16V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Paste Customer Complaint
+                    </h2>
+                    <span class="char-count" id="charCount">0 characters</span>
+                </div>
+                <textarea
+                    id="complaintInput"
+                    placeholder="Enter the customer complaint here...&#10;&#10;Example: My debit card was charged twice for a single purchase at the grocery store. The merchant says they only processed one transaction but my bank statement shows two identical charges of $47.50."
+                    rows="6"
+                ></textarea>
+                <div class="input-actions">
+                    <button class="btn btn-secondary" id="clearBtn" title="Clear">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        Clear
+                    </button>
+                    <button class="btn btn-primary" id="classifyBtn">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 8L6 12L14 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span id="btnText">Classify Complaint</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-grid">
+                    <!-- Category Card -->
+                    <div class="result-card glass-card" id="categoryCard">
+                        <div class="result-icon" id="categoryIcon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                        <span class="result-label">Category</span>
+                        <span class="result-value" id="categoryValue">—</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="categoryConfidence"></div>
+                        </div>
+                        <span class="confidence-text" id="categoryConfText">—</span>
+                    </div>
+
+                    <!-- Urgency Card -->
+                    <div class="result-card glass-card" id="urgencyCard">
+                        <div class="result-icon" id="urgencyIcon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 9V13M12 17H12.01M12 3L2 21H22L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="result-label">Urgency</span>
+                        <span class="result-value" id="urgencyValue">—</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="urgencyConfidence"></div>
+                        </div>
+                        <span class="confidence-text" id="urgencyConfText">—</span>
+                    </div>
+
+                    <!-- Routing Card -->
+                    <div class="result-card glass-card" id="routingCard">
+                        <div class="result-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M16 21V19C16 16.7909 14.2091 15 12 15H5C2.79086 15 1 16.7909 1 19V21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="8.5" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M20 8V14M17 11H23" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="result-label">Routed To</span>
+                        <span class="result-value" id="routingValue">—</span>
+                        <div class="routing-badge" id="routingBadge"></div>
+                    </div>
+
+                    <!-- Combined Confidence -->
+                    <div class="result-card glass-card confidence-card">
+                        <div class="result-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="result-label">Overall Confidence</span>
+                        <div class="confidence-ring" id="confidenceRing">
+                            <svg viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+                                <circle cx="60" cy="60" r="52" fill="none" stroke="url(#confGrad)" stroke-width="8"
+                                    stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327" id="confCircle"
+                                    transform="rotate(-90 60 60)"/>
+                                <defs>
+                                    <linearGradient id="confGrad" x1="0" y1="0" x2="120" y2="120">
+                                        <stop stop-color="#6366f1"/>
+                                        <stop offset="1" stop-color="#06b6d4"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <span class="confidence-pct" id="confidencePct">—</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section glass-card" id="errorSection" style="display: none;">
+                <div class="error-icon">⚠️</div>
+                <p id="errorText"></p>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>ComplaintIQ v1.0 — TF-IDF + Logistic Regression · scikit-learn · Flask</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
